@@ -2,14 +2,17 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
     const grid = document.querySelector('.grid')
     const doodler = document.createElement('div')
     let doodlerLeftSpace = 50
-    let doodlerBottomSpace = 150                // change to 200 to see platforms move
+    let doodlerBottomSpace = 150                // change to >200 to see platforms move
     let isGameOver = false
     let platformCount = 5
     let platforms = []                      //empty array to add new platforms
+    let upTimerId                           // made global so can cancel outside of the jump function
+    let downTimerId
 
     function createDoodler(){
         grid.appendChild(doodler)       //puts the doodler into the grid
         doodler.classList.add('doodler')                 //styles the doodler
+        doodlerLeftSpace = platforms[0].left        //makes the doodler start at the left position of the first platform
         doodler.style.left =  doodlerLeftSpace + 'px'       //allows the doodler to move left
         doodler.style.bottom = doodlerBottomSpace + 'px'
     }
@@ -49,12 +52,41 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
         }
     }
 
+    function jump(){                    // makes doodler jump
+        clearInterval(downTimerId)
+        upTimerId = setInterval(function() {            // stops clearinterval
+            doodlerBottomSpace += 5
+            doodler.style.bottom = doodlerBottomSpace + 'px'  //makes doodler go upwards
+            if (doodlerBottomSpace > 350) {
+                fall()                          //call the fall funtion
+           }
+        },30)
+    }
+
+   function fall(){
+        clearInterval(upTimerId)            //stops him going up
+        downTimerId = setInterval(function(){       
+            doodlerBottomSpace -= 5
+            doodler.style.bottom = doodlerBottomSpace + 'px'
+            if (doodlerBottomSpace <= 0) {          //stops him going down
+                gameOver()
+            }
+        },30)
+    }
+
+    function gameOver() {
+        console.log('game over :(')
+        isGameOver = true
+        clearInterval(upTimerId)
+        clearInterval(downTimerId)
+    }
 
     function start() {              //to make doodler appear if gameover is false
         if(!isGameOver) {
-            createDoodler()
             createPlatforms()       //creats platforms when game starts
+            createDoodler()
             setInterval(movePlatforms, 30)   //moves platform every 30 ms
+            jump()
         }
     }
     //attach to button
