@@ -1,0 +1,19 @@
+{
+  "name": "doodlejump",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/James-Sample/doodleJump.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/James-Sample/doodleJump/issues"
+  },
+  "homepage": "https://github.com/James-Sample/doodleJump#readme",
+  "description": ""
+}
