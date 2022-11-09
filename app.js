@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
     let upTimerId                           // made global so can cancel outside of the jump function
     let downTimerId
     let isJumping = true
+    let isGoingLeft = false
+    let isGoingRight = false
+    let leftTimerId
+    let rightTimerId
 
     function createDoodler(){
         grid.appendChild(doodler)       //puts the doodler into the grid
@@ -100,12 +104,40 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
 
     function control(e) {
         if (e.key === 'ArrowLeft') {
-            //move left
+            moveLeft()
         } else if (e.key === 'ArrowRight') {
-            //move right
+            moveRight()
         } else if (e.key === "ArrowUp") {
-            //move straight
+            moveStraight()
         }
+    }
+
+    function moveLeft() {
+        if (isGoingRight) {
+            clearInterval(rightTimerId)
+            isGoingRight = false
+        }
+        isGoingLeft = true
+        leftTimerId = setInterval(function() {
+            if (doodlerLeftSpace >=0 ) {            //stops it moving left off the page
+            doodlerLeftSpace -= 5
+            doodler.style.left = doodlerLeftSpace + 'px'
+        } else moveRight()
+        },30);
+    }
+
+    function moveRight() {
+        if (isGoingLeft) {
+            clearInterval(leftTimerId)
+            isGoingLeft = false
+        }
+        isGoingRight = true
+        rightTimerID = setInterval(function () {
+            if (doodlerLeftSpace <= 340) {               // 400 - doodler width
+                doodlerLeftSpace += 5
+                doodler.style.left = doodlerLeftSpace + 'px'
+            } else moveLeft()
+        }, 30)
     }
 
     function start() {              //to make doodler appear if gameover is false
@@ -114,7 +146,15 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
             createDoodler()
             setInterval(movePlatforms, 30)   //moves platform every 30 ms
             jump()
+            document.addEventListener('keyup',control)          //listen for key presses
         }
+    }
+
+    function moveStraight(){
+        isGoingRight = false
+        isGoingLeft = false
+        clearInterval(rightTimerId)
+        clearInterval(leftTimerId)
     }
     //attach to button
     start()
