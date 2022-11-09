@@ -2,12 +2,14 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
     const grid = document.querySelector('.grid')
     const doodler = document.createElement('div')
     let doodlerLeftSpace = 50
-    let doodlerBottomSpace = 150                // change to >200 to see platforms move
+    let startPoint = 150
+    let doodlerBottomSpace = startPoint               // change to >200 to see platforms move
     let isGameOver = false
     let platformCount = 5
     let platforms = []                      //empty array to add new platforms
     let upTimerId                           // made global so can cancel outside of the jump function
     let downTimerId
+    let isJumping = true
 
     function createDoodler(){
         grid.appendChild(doodler)       //puts the doodler into the grid
@@ -54,10 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
 
     function jump(){                    // makes doodler jump
         clearInterval(downTimerId)
+        isJumping = true                    //stops the double jump
         upTimerId = setInterval(function() {            // stops clearinterval
             doodlerBottomSpace += 5
             doodler.style.bottom = doodlerBottomSpace + 'px'  //makes doodler go upwards
-            if (doodlerBottomSpace > 350) {
+            if (doodlerBottomSpace > startPoint + 200) {                //alllaws it to jumop relative to new startpoint
                 fall()                          //call the fall funtion
            }
         },30)
@@ -65,12 +68,26 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
 
    function fall(){
         clearInterval(upTimerId)            //stops him going up
+        isJumping = false                       //cant jump when falling
         downTimerId = setInterval(function(){       
             doodlerBottomSpace -= 5
             doodler.style.bottom = doodlerBottomSpace + 'px'
             if (doodlerBottomSpace <= 0) {          //stops him going down
                 gameOver()
             }
+            platforms.forEach(platform => {              //stops him falling through a platform
+                if (
+                    (doodlerBottomSpace >= platform.bottom) &&
+                    (doodlerBottomSpace <= (platform.bottom + 15)) &&         //these two check to see if it is within the platforms (platform height is 15px)
+                    ((doodlerLeftSpace + 60) >= platform.left) &&           //left space+ width of doodler, if smaller than platform he wont be on it
+                    (doodlerLeftSpace <= (platform.left + 85)) &&               // same but plus platform width, makes sure hes not on the right side
+                    !isJumping
+                ) {
+                    console.log('landed')
+                    startPoint = doodlerBottomSpace     //overides the initial 150 set on the global variable
+                    jump()
+                }
+            })
         },30)
     }
 
@@ -79,6 +96,16 @@ document.addEventListener('DOMContentLoaded', () => {    //ensures script doesnt
         isGameOver = true
         clearInterval(upTimerId)
         clearInterval(downTimerId)
+    }
+
+    function control(e) {
+        if (e.key === 'ArrowLeft') {
+            //move left
+        } else if (e.key === 'ArrowRight') {
+            //move right
+        } else if (e.key === "ArrowUp") {
+            //move straight
+        }
     }
 
     function start() {              //to make doodler appear if gameover is false
