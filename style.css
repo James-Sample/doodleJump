@@ -3,12 +3,14 @@
     height: 600px;
     background-color: yellow;
     position: relative;
+    font-size: 200px;
+    text-align: center;
 }
 
 .doodler {
     width: 60px;
     height: 86px;
-    background-color: red;
+    background-image: url('../images/orangeChar.png');
     position: absolute;
 }
 
